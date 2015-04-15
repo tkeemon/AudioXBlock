@@ -3,7 +3,16 @@
     <li class="field comp-setting-entry is-set">
       <div class="wrapper-comp-setting">
         <label class="label setting-label" for="audio_src">Audio Source Location</label>
-        <input class="input setting-input" name="audio_src" id="audio_src" value="{src}" type="text" />
+        <input class="input setting-input" name="audio_src" id="audio_src" value="{{src}}" type="text" />
+      </div>
+    </li>
+    <li class="field comp-setting-entry is-set">
+      <div class="wrapper-comp-setting">
+        <label class="label setting-label" for="allow_download">Allow Audio Download</label>
+        <select class="input setting-input allow_download" name="allow_download" id="allow_download">
+          <option value="True" {% if allow_download %} selected {% endif %}>True</option>
+          <option value="False" {% if not allow_download %} selected {% endif %}>False</option>
+        </select>
       </div>
     </li>
   </ul>

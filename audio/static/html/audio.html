@@ -1,7 +1,10 @@
 <div class="audio_block">
 <audio controls preload>
-  <source src="{src}">
-  <embed height="50" width="100" src="{src}">
+  <source src="{{ src }}">
+  <embed height="50" width="100" src="{{ src }}">
 </audio>
-
+{% if allow_download %}
+	<br />
+	<a href="{{ src }}" download>Download Audio</a>
+{% endif %}
 </div>

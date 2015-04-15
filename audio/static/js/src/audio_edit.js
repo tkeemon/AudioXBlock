@@ -2,7 +2,8 @@ function AudioEditBlock(runtime, element) {
   $(element).find('.save-button').bind('click', function() {
     var handlerUrl = runtime.handlerUrl(element, 'studio_submit');
     var data = {
-      src: $(element).find('input[name=audio_src]').val()
+      src: $(element).find('input[name=audio_src]').val(),
+      allow_download: $(element).find('select[name=allow_download]').val()
     };
     $.post(handlerUrl, JSON.stringify(data)).done(function(response) {
       window.location.reload(false);

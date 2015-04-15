@@ -2,8 +2,10 @@
 
 import pkg_resources
 
+from django.template import Context, Template
+
 from xblock.core import XBlock
-from xblock.fields import Scope, Integer, String
+from xblock.fields import Scope, Integer, String, Boolean
 from xblock.fragment import Fragment
 
 
@@ -16,7 +18,14 @@ class AudioXBlock(XBlock):
     # self.<fieldname>.
     src = String(
            scope = Scope.settings, 
-           help = "URL for MP3 file to play"
+           help = "URL for MP3 file to play",
+           default = "http://www.example.com"
+        )
+
+    allow_download = Boolean(
+            scope = Scope.settings,
+            help = "Provide download link for audio?",
+            default = False
         )
 
     def resource_string(self, path):
@@ -24,14 +33,26 @@ class AudioXBlock(XBlock):
         data = pkg_resources.resource_string(__name__, path)
         return data.decode("utf8")
 
+    def render_template(self, template_path, context={}):
+        """
+        Evaluate a template by resource path, applying the provided context
+        """
+        template_str = self.resource_string(template_path)
+        template = Template(template_str)
+        return template.render(Context(context))
+
     # TO-DO: change this view to display your data your own way.
     def student_view(self, context=None):
         """
         The primary view of the AudioXBlock, shown to students
         when viewing courses.
         """
-        html = self.resource_string("static/html/audio.html")
-        frag = Fragment(html.format(src = self.src))
+        frag = Fragment()
+        frag.add_content(self.render_template("/static/html/audio.html", { 
+            'src': self.src, 
+            'allow_download': self.allow_download 
+        }))
+
         frag.add_css(self.resource_string("static/css/audio.css"))
         return frag
 
@@ -39,8 +60,11 @@ class AudioXBlock(XBlock):
         """
         The view for editing the AudioXBlock parameters inside Studio.
         """
-        html = self.resource_string("static/html/audio_edit.html")
-        frag = Fragment(html.format(src=self.src))
+        frag = Fragment()
+        frag.add_content(self.render_template("/static/html/audio_edit.html", {
+            'src': self.src, 
+            'allow_download': self.allow_download
+        }))
 
         js = self.resource_string("static/js/src/audio_edit.js")
         frag.add_javascript(js)
@@ -54,6 +78,7 @@ class AudioXBlock(XBlock):
         Called when submitting the form in Studio.
         """
         self.src = data.get('src')
+        self.allow_download = data.get('allow_download')
 
         return {'result': 'success'}
 
